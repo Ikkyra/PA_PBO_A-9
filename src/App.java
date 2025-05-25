@@ -1,8 +1,7 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 import database.dataUser;
 import entity.Pelanggan;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class App {
     private static dataUser dataUser = new dataUser();
@@ -13,140 +12,147 @@ public class App {
     }
 
     private static void adminMenu() {
-        System.out.println("Masuk sebagai Admin");
+        clearScreen();
+        System.out.println("+-----------------------------+");
+        System.out.println("|      MASUK SEBAGAI ADMIN   |");
+        System.out.println("+-----------------------------+");
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===== Menu Admin =====");
+            System.out.println("\n=========== MENU ADMIN ===========");
             System.out.println("1. Tambah Pelanggan");
             System.out.println("2. Lihat List Pelanggan");
             System.out.println("3. Update Pelanggan");
             System.out.println("4. Hapus Pelanggan");
             System.out.println("5. Cari Pelanggan");
             System.out.println("6. Keluar");
-            System.out.println("======================");
+            System.out.println("==================================");
             System.out.print("Pilih menu: ");
 
             try {
                 int menu = scanner.nextInt();
-                scanner.nextLine(); 
+                scanner.nextLine();
 
                 switch (menu) {
-                    case 1:
+                    case 1 -> {
+                        clearScreen();
                         tambahPelanggan();
-                        break;
-                    case 2:
+                        delayClearScreen();
+                    }
+                    case 2 -> {
+                        clearScreen();
                         lihatPelanggan();
-                        break;
-                    case 3:
+                    }
+                    case 3 -> {
+                        clearScreen();
                         updatePelanggan();
-                        break;
-                    case 4:
+                        delayClearScreen();
+                    }
+                    case 4 -> {
+                        clearScreen();
                         hapusPelanggan();
-                        break;
-                    case 5:
+                        delayClearScreen();
+                    }
+                    case 5 -> {
+                        clearScreen();
                         cariPelanggan();
-                        break;
-                    case 6:
+                    }
+                    case 6 -> {
                         System.out.println("Terima kasih! Keluar dari sistem...");
                         running = false;
-                        break;
-                    default:
-                        System.out.println("Menu tidak tersedia. Silakan pilih 1-6.");
+                    }
+                    default -> System.out.println("Menu tidak tersedia. Silakan pilih 1-6.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Input harus berupa angka! Silakan ulangi.");
-                scanner.nextLine(); 
+                scanner.nextLine();
             }
         }
     }
 
-    private static void tambahPelanggan() {
-        int pilihan = 0;
-        boolean validInput = false;
+ private static void tambahPelanggan() {
+    int pilihan = 0;
+    boolean validInput = false;
 
-        while (!validInput) {
+    while (!validInput) {
+        try {
+            System.out.println("\n--- PILIH TIPE PELANGGAN ---");
+            System.out.println("1. Biasa");
+            System.out.println("2. Reguler");
+            System.out.println("3. Premium");
+            System.out.print("Pilihan: ");
+            pilihan = scanner.nextInt();
+            scanner.nextLine();
+
+            if (pilihan >= 1 && pilihan <= 3) {
+                validInput = true;
+            } else {
+                System.out.println("Pilihan hanya 1-3. Silakan ulangi.");
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Input harus berupa angka! Silakan ulangi.");
+            scanner.nextLine();
+        }
+    }
+
+    System.out.print("Masukkan Nama: ");
+    String nama = scanner.nextLine();
+    while (nama.isEmpty()) {
+        System.out.print("Nama tidak boleh kosong. Masukkan Nama: ");
+        nama = scanner.nextLine();
+    }
+
+    System.out.print("Masukkan Alamat: ");
+    String alamat = scanner.nextLine();
+    while (alamat.isEmpty()) {
+        System.out.print("Alamat tidak boleh kosong. Masukkan Alamat: ");
+        alamat = scanner.nextLine();
+    }
+
+    String noTelp = inputNoTelp();
+
+    String noKTP;
+    while (true) {
+        noKTP = inputNoKTP();
+
+        if (dataUser.cekKTP(noKTP)) {
+            System.out.println("No KTP sudah terdaftar. Silakan masukkan KTP lain.");
+        } else {
+            break;
+        }
+    }
+
+    switch (pilihan) {
+        case 1 -> dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP);
+        case 2 -> {
+            int poin = 0;
             try {
-                System.out.println("\nPilih Tipe Pelanggan:");
-                System.out.println("1. Biasa");
-                System.out.println("2. Reguler");
-                System.out.println("3. Premium");
-                System.out.print("Pilihan: ");
-                pilihan = scanner.nextInt();
+                System.out.print("Masukkan Poin Awal: ");
+                poin = scanner.nextInt();
                 scanner.nextLine();
-
-                if (pilihan >= 1 && pilihan <= 3) {
-                    validInput = true;
-                } else {
-                    System.out.println("Pilihan hanya 1-3. Silakan ulangi.");
-                }
             } catch (InputMismatchException e) {
-                System.out.println("Input harus berupa angka! Silakan ulangi.");
+                System.out.println("Input poin harus angka. Diisi 0 otomatis.");
                 scanner.nextLine();
             }
+            dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, poin);
         }
-
-        System.out.print("Masukkan Nama: ");
-        String nama = scanner.nextLine();
-        while (nama.isEmpty()) {
-            System.out.print("Nama tidak boleh kosong. Masukkan Nama: ");
-            nama = scanner.nextLine();
+        case 3 -> {
+            double diskon = 0.0;
+            try {
+                System.out.print("Masukkan Diskon (%): ");
+                diskon = scanner.nextDouble();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Input diskon harus angka. Diisi 0 otomatis.");
+                scanner.nextLine();
+            }
+            dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, diskon);
         }
-
-        System.out.print("Masukkan Alamat: ");
-        String alamat = scanner.nextLine();
-        while (alamat.isEmpty()) {
-            System.out.print("Alamat tidak boleh kosong. Masukkan Alamat: ");
-            alamat = scanner.nextLine();
-        }
-
-        System.out.print("Masukkan No Telp: ");
-        String noTelp = scanner.nextLine();
-        while (noTelp.isEmpty()) {
-            System.out.print("No Telp tidak boleh kosong. Masukkan No Telp: ");
-            noTelp = scanner.nextLine();
-        }
-
-        System.out.print("Masukkan No KTP: ");
-        String noKTP = scanner.nextLine();
-        while (noKTP.isEmpty()) {
-            System.out.print("No KTP tidak boleh kosong. Masukkan No KTP: ");
-            noKTP = scanner.nextLine();
-        }
-
-
-        switch (pilihan) {
-            case 1:
-                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP);
-                break;
-            case 2:
-                int poin = 0;
-                try {
-                    System.out.print("Masukkan Poin Awal: ");
-                    poin = scanner.nextInt();
-                    scanner.nextLine();
-                } catch (InputMismatchException e) {
-                    System.out.println("Input poin harus angka. Diisi 0 otomatis.");
-                    scanner.nextLine();
-                }
-                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, poin);
-                break;
-            case 3:
-                double diskon = 0.0;
-                try {
-                    System.out.print("Masukkan Diskon (%): ");
-                    diskon = scanner.nextDouble();
-                    scanner.nextLine();
-                } catch (InputMismatchException e) {
-                    System.out.println("Input diskon harus angka. Diisi 0 otomatis.");
-                    scanner.nextLine();
-                }
-                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, diskon);
-                break;
-        }
-
-        System.out.println("Pelanggan berhasil ditambahkan.\n");
     }
+    dataUser.saveToCSV("bUser.csv"); 
+    System.out.println("Pelanggan berhasil ditambahkan.\n");
+}
+
 
     private static void lihatPelanggan() {
         if (dataUser.getPelangganList().isEmpty()) {
@@ -154,7 +160,7 @@ public class App {
             return;
         }
 
-        System.out.println("\n=== Daftar Pelanggan ===");
+        System.out.println("\n========= DAFTAR PELANGGAN =========");
         for (Pelanggan pelanggan : dataUser.getPelangganList()) {
             System.out.println("-----------------------------------");
             System.out.println(pelanggan.getInfoPelanggan());
@@ -162,60 +168,84 @@ public class App {
     }
 
     private static void updatePelanggan() {
-        System.out.print("Masukkan No KTP pelanggan yang ingin diubah: ");
-        String noKTPUpdate = scanner.nextLine();
-
+        String noKTPUpdate = inputNoKTP();
         Pelanggan pelanggan = dataUser.cariPelanggan(noKTPUpdate);
+
         if (pelanggan == null) {
             System.out.println("Pelanggan dengan No KTP tersebut tidak ditemukan.");
             return;
         }
 
-        System.out.print("Masukkan Nama Baru (kosongkan jika tidak diubah): ");
+        System.out.println("=== UPDATE DATA PELANGGAN ===");
+        System.out.println("Biarkan kosong jika tidak ingin mengubah data tertentu.");
+
+        System.out.print("Masukkan Nama Baru: ");
         String nama = scanner.nextLine();
-        if (!nama.isEmpty()) pelanggan.setNama(nama);
+        if (nama.isEmpty()) nama = pelanggan.getNama();
 
-        System.out.print("Masukkan Alamat Baru (kosongkan jika tidak diubah): ");
+        System.out.print("Masukkan Alamat Baru: ");
         String alamat = scanner.nextLine();
-        if (!alamat.isEmpty()) pelanggan.setAlamat(alamat);
+        if (alamat.isEmpty()) alamat = pelanggan.getAlamat();
 
-        System.out.print("Masukkan No Telp Baru (kosongkan jika tidak diubah): ");
+        System.out.print("Masukkan No Telp Baru: ");
         String noTelp = scanner.nextLine();
-        if (!noTelp.isEmpty()) pelanggan.setNoTelp(noTelp);
-
-
-        
-        if (pelanggan instanceof entity.PelangganReguler) {
-            System.out.print("Masukkan Poin Baru: ");
-            try {
-                int poinBaru = scanner.nextInt();
-                scanner.nextLine();
-                ((entity.PelangganReguler) pelanggan).setPoin(poinBaru);
-            } catch (InputMismatchException e) {
-                System.out.println("Input poin harus berupa angka. Poin tidak diubah.");
-                scanner.nextLine();
+        if (noTelp.isEmpty()) noTelp = pelanggan.getNoTelp();
+        else {
+            while (!noTelp.matches("\\d+")) {
+                System.out.print("No Telp harus angka. Masukkan lagi: ");
+                noTelp = scanner.nextLine();
             }
-        } else if (pelanggan instanceof entity.PelangganPremium) {
-            System.out.print("Masukkan Diskon Baru (%): ");
+        }
+
+        System.out.println("Pilih Jenis Pelanggan Baru:");
+        System.out.println("1. Biasa");
+        System.out.println("2. Reguler");
+        System.out.println("3. Premium");
+        int pilihan;
+        while (true) {
             try {
-                double diskonBaru = scanner.nextDouble();
+                System.out.print("Pilihan (1-3): ");
+                pilihan = scanner.nextInt();
                 scanner.nextLine();
-                ((entity.PelangganPremium) pelanggan).setDiskon(diskonBaru);
+                if (pilihan >= 1 && pilihan <= 3) break;
+                else System.out.println("Pilihan hanya 1-3.");
             } catch (InputMismatchException e) {
-                System.out.println("Input diskon harus berupa angka. Diskon tidak diubah.");
+                System.out.println("Input harus angka.");
                 scanner.nextLine();
             }
         }
 
-        
-        dataUser.updatePelanggan(noKTPUpdate, nama, alamat, noTelp);
-        System.out.println("Data pelanggan berhasil diperbarui.\n");
+        dataUser.hapusPelanggan(noKTPUpdate);
+
+        switch (pilihan) {
+            case 1 -> dataUser.tambahPelanggan(nama, alamat, noTelp, noKTPUpdate);
+            case 2 -> {
+                int poin = 0;
+                System.out.print("Masukkan Poin: ");
+                try {
+                    poin = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Input salah. Poin diset ke 0.");
+                }
+                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTPUpdate, poin);
+            }
+            case 3 -> {
+                double diskon = 0.0;
+                System.out.print("Masukkan Diskon (%): ");
+                try {
+                    diskon = Double.parseDouble(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Input salah. Diskon diset ke 0.");
+                }
+                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTPUpdate, diskon);
+            }
+        }
+
+        System.out.println("Data pelanggan berhasil diperbarui & role berhasil diubah.\n");
     }
 
-
     private static void hapusPelanggan() {
-        System.out.print("Masukkan No KTP pelanggan yang ingin dihapus: ");
-        String noKTPHapus = scanner.nextLine();
+        String noKTPHapus = inputNoKTP();
 
         if (!dataUser.cekKTP(noKTPHapus)) {
             System.out.println("Pelanggan tidak ditemukan.");
@@ -227,15 +257,64 @@ public class App {
     }
 
     private static void cariPelanggan() {
-        System.out.print("Masukkan No KTP pelanggan: ");
-        String noKTP = scanner.nextLine();
-
+        String noKTP = inputNoKTP();
         Pelanggan pelanggan = dataUser.cariPelanggan(noKTP);
+
         if (pelanggan == null) {
             System.out.println("Pelanggan tidak ditemukan.");
         } else {
-            System.out.println("\nData Pelanggan:");
+            System.out.println("\nDATA PELANGGAN:");
             System.out.println(pelanggan.getInfoPelanggan());
         }
+    }
+
+    private static void clearScreen() {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal membersihkan layar.");
+        }
+    }
+
+    private static void delayClearScreen() {
+        try {
+            Thread.sleep(3000);
+            clearScreen();
+        } catch (InterruptedException e) {
+            System.out.println("Terjadi gangguan saat menunggu.");
+        }
+    }
+
+    private static String inputNoKTP() {
+        String noKTP;
+        while (true) {
+            System.out.print("Masukkan No KTP (16 digit): ");
+            noKTP = scanner.nextLine();
+            if (noKTP.matches("\\d{16}")) {
+                break;
+            } else {
+                System.out.println("No KTP harus 16 digit angka. Silakan ulangi.");
+            }
+        }
+        return noKTP;
+    }
+
+    private static String inputNoTelp() {
+        String noTelp;
+        while (true) {
+            System.out.print("Masukkan No Telp: ");
+            noTelp = scanner.nextLine();
+            if (noTelp.matches("\\d+")) {
+                break;
+            } else {
+                System.out.println("No Telp harus berupa angka. Silakan ulangi.");
+            }
+        }
+        return noTelp;
     }
 }
