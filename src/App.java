@@ -28,9 +28,9 @@ public class App {
             System.out.println("|   3. Update Pelanggan             |");
             System.out.println("|   4. Hapus Pelanggan              |");
             System.out.println("|   5. Cari Pelanggan               |");
-            System.out.println("|   0. Keluar                       |");
+            System.out.println("|   6. Keluar                       |");
             System.out.println("+-----------------------------------+");
-            System.out.print("Pilihan Anda [0-5]: ");
+            System.out.print("Pilihan Anda [1-6]: ");
 
             try {
                 int menu = scanner.nextInt();
@@ -60,101 +60,94 @@ public class App {
                         clearScreen();
                         cariPelanggan();
                     }
-                    case 0 -> {
+                    case 6 -> {
                         System.out.println("Terima kasih! Keluar dari sistem...");
                         running = false;
                     }
-                    default -> System.out.println("Menu tidak tersedia. Silakan pilih 1-6.");
+                    default -> System.out.println("Menu tidak tersedia. Silakan pilih 0-5.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Input harus berupa angka! Silakan ulangi.");
                 scanner.nextLine();
+                delayClearScreen();
             }
         }
     }
 
- private static void tambahPelanggan() {
-    int pilihan = 0;
-    boolean validInput = false;
+    private static void tambahPelanggan() {
+        int pilihan = 0;
+        boolean validInput = false;
 
-    while (!validInput) {
-        try {
-            System.out.println("\n==========[ TIPE MEMBERSHIPS ]==============");
-            System.out.println("     [1] Biasa  [2] Reguler  [3] Premium"    );
-            System.out.println("============================================");
-            System.out.print("Pilih Jenis Pelanggan: ");
-            pilihan = scanner.nextInt();
-            scanner.nextLine();
+        while (!validInput) {
+            try {
+                System.out.println("\n==========[ TIPE MEMBERSHIPS ]==============");
+                System.out.println("     [1] Biasa  [2] Reguler  [3] Premium");
+                System.out.println("============================================");
+                System.out.print("Pilih Jenis Pelanggan: ");
+                String input = scanner.nextLine();
+                if (isKembali(input)) return;
+                pilihan = Integer.parseInt(input);
 
-            if (pilihan >= 1 && pilihan <= 3) {
-                validInput = true;
+                if (pilihan >= 1 && pilihan <= 3) {
+                    validInput = true;
+                } else {
+                    System.out.println("Pilihan hanya 1-3. Silakan ulangi.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Input harus berupa angka! Silakan ulangi.");
+            }
+        }
+
+        String nama = inputTanpaKoma("Nama");
+        if (nama == null) return;
+
+        String alamat = inputTanpaKoma("Alamat");
+        if (alamat == null) return;
+
+        String noTelp = inputNoTelp();
+        if (noTelp == null) return;
+
+        String noKTP;
+        while (true) {
+            noKTP = inputNoKTP();
+            if (noKTP == null) return;
+
+            if (dataUser.cekKTP(noKTP)) {
+                System.out.println("No KTP sudah terdaftar. Silakan masukkan KTP lain.");
             } else {
-                System.out.println("Pilihan hanya 1-3. Silakan ulangi.");
+                break;
             }
-        } catch (InputMismatchException e) {
-            System.out.println("Input harus berupa angka! Silakan ulangi.");
-            scanner.nextLine();
         }
-    }
 
-    System.out.print("Masukkan Nama: ");
-    String nama = scanner.nextLine();
-    while (nama.isEmpty()) {
-        System.out.print("Nama tidak boleh kosong. Masukkan Nama: ");
-        nama = scanner.nextLine();
-    }
-
-    System.out.print("Masukkan Alamat: ");
-    String alamat = scanner.nextLine();
-    while (alamat.isEmpty()) {
-        System.out.print("Alamat tidak boleh kosong. Masukkan Alamat: ");
-        alamat = scanner.nextLine();
-    }
-
-    String noTelp = inputNoTelp();
-
-    String noKTP;
-    while (true) {
-        noKTP = inputNoKTP();
-
-        if (dataUser.cekKTP(noKTP)) {
-            System.out.println("No KTP sudah terdaftar. Silakan masukkan KTP lain.");
-        } else {
-            break;
-        }
-    }
-
-    switch (pilihan) {
-        case 1 -> dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP);
-        case 2 -> {
-            int poin = 0;
-            try {
-                System.out.print("Masukkan Poin Awal: ");
-                poin = scanner.nextInt();
-                scanner.nextLine();
-            } catch (InputMismatchException e) {
-                System.out.println("Input poin harus angka. Diisi 0 otomatis.");
-                scanner.nextLine();
+        switch (pilihan) {
+            case 1 -> dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP);
+            case 2 -> {
+                int poin = 0;
+                try {
+                    System.out.print("Masukkan Poin Awal: ");
+                    String input = scanner.nextLine();
+                    if (isKembali(input)) return;
+                    poin = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Input poin salah. Diisi 0 otomatis.");
+                }
+                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, poin);
             }
-            dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, poin);
-        }
-        case 3 -> {
-            double diskon = 0.0;
-            try {
-                System.out.print("Masukkan Diskon (%): ");
-                diskon = scanner.nextDouble();
-                scanner.nextLine();
-            } catch (InputMismatchException e) {
-                System.out.println("Input diskon harus angka. Diisi 0 otomatis.");
-                scanner.nextLine();
+            case 3 -> {
+                double diskon = 0.0;
+                try {
+                    System.out.print("Masukkan Diskon (%): ");
+                    String input = scanner.nextLine();
+                    if (isKembali(input)) return;
+                    diskon = Double.parseDouble(input);
+                } catch (NumberFormatException e) {
+                    System.out.println("Input diskon salah. Diisi 0 otomatis.");
+                }
+                dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, diskon);
             }
-            dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, diskon);
         }
+        System.out.println("Pelanggan berhasil ditambahkan.\n");
     }
-    // dataUser.saveToCSV("dbUser.csv"); 
-    System.out.println("Pelanggan berhasil ditambahkan.\n");
-}
-
 
     private static void lihatPelanggan() {
         if (dataUser.getPelangganList().isEmpty()) {
@@ -171,71 +164,75 @@ public class App {
 
     private static void updatePelanggan() {
         String noKTPUpdate = inputNoKTP();
-        Pelanggan pelanggan = dataUser.cariPelanggan(noKTPUpdate);
+        if (noKTPUpdate == null) return;
 
+        Pelanggan pelanggan = dataUser.cariPelanggan(noKTPUpdate);
         if (pelanggan == null) {
             System.out.println("Pelanggan dengan No KTP tersebut tidak ditemukan.");
             return;
         }
 
         System.out.println("=== UPDATE DATA PELANGGAN ===");
-        System.out.println("Biarkan kosong jika tidak ingin mengubah data tertentu.");
+        System.out.println("Ketik KEMBALI untuk membatalkan.");
 
-        System.out.print("Masukkan Nama Baru: ");
-        String nama = scanner.nextLine();
+        String nama = inputTanpaKoma("Nama Baru (Kosong jika tidak diubah)");
+        if (nama == null) return;
         if (nama.isEmpty()) nama = pelanggan.getNama();
 
-        System.out.print("Masukkan Alamat Baru: ");
-        String alamat = scanner.nextLine();
+        String alamat = inputTanpaKoma("Alamat Baru (Kosong jika tidak diubah)");
+        if (alamat == null) return;
         if (alamat.isEmpty()) alamat = pelanggan.getAlamat();
 
         System.out.print("Masukkan No Telp Baru: ");
         String noTelp = scanner.nextLine();
+        if (isKembali(noTelp)) return;
         if (noTelp.isEmpty()) noTelp = pelanggan.getNoTelp();
-        else {
-            while (!noTelp.matches("\\d+")) {
-                System.out.print("No Telp harus angka. Masukkan lagi: ");
-                noTelp = scanner.nextLine();
-            }
+        else while (!noTelp.matches("\\d+")) {
+            System.out.print("No Telp harus angka. Masukkan lagi: ");
+            noTelp = scanner.nextLine();
+            if (isKembali(noTelp)) return;
         }
 
         System.out.println("Pilih Jenis Memberships Baru:");
         System.out.println("\n==========[ TIPE MEMBERSHIPS ]==============");
-        System.out.println("     [1] Biasa  [2] Reguler  [3] Premium"    );
+        System.out.println("     [1] Biasa  [2] Reguler  [3] Premium");
         System.out.println("============================================");
         int pilihan;
         while (true) {
             try {
                 System.out.print("Pilihan (1-3): ");
-                pilihan = scanner.nextInt();
-                scanner.nextLine();
+                String input = scanner.nextLine();
+                if (isKembali(input)) return;
+                pilihan = Integer.parseInt(input);
                 if (pilihan >= 1 && pilihan <= 3) break;
                 else System.out.println("Pilihan hanya 1-3.");
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Input harus angka.");
-                scanner.nextLine();
             }
         }
 
         dataUser.hapusPelanggan(noKTPUpdate);
-
         switch (pilihan) {
             case 1 -> dataUser.tambahPelanggan(nama, alamat, noTelp, noKTPUpdate);
             case 2 -> {
-                int poin = 0;
                 System.out.print("Masukkan Poin: ");
+                int poin = 0;
                 try {
-                    poin = Integer.parseInt(scanner.nextLine());
+                    String input = scanner.nextLine();
+                    if (isKembali(input)) return;
+                    poin = Integer.parseInt(input);
                 } catch (NumberFormatException e) {
                     System.out.println("Input salah. Poin diset ke 0.");
                 }
                 dataUser.tambahPelanggan(nama, alamat, noTelp, noKTPUpdate, poin);
             }
             case 3 -> {
-                double diskon = 0.0;
                 System.out.print("Masukkan Diskon (%): ");
+                double diskon = 0.0;
                 try {
-                    diskon = Double.parseDouble(scanner.nextLine());
+                    String input = scanner.nextLine();
+                    if (isKembali(input)) return;
+                    diskon = Double.parseDouble(input);
                 } catch (NumberFormatException e) {
                     System.out.println("Input salah. Diskon diset ke 0.");
                 }
@@ -248,6 +245,7 @@ public class App {
 
     private static void hapusPelanggan() {
         String noKTPHapus = inputNoKTP();
+        if (noKTPHapus == null) return;
 
         if (!dataUser.cekKTP(noKTPHapus)) {
             System.out.println("Pelanggan tidak ditemukan.");
@@ -260,6 +258,8 @@ public class App {
 
     private static void cariPelanggan() {
         String noKTP = inputNoKTP();
+        if (noKTP == null) return;
+
         Pelanggan pelanggan = dataUser.cariPelanggan(noKTP);
 
         if (pelanggan == null) {
@@ -285,7 +285,7 @@ public class App {
 
     private static void delayClearScreen() {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1500);
             clearScreen();
         } catch (InterruptedException e) {
             System.out.println("Terjadi gangguan saat menunggu.");
@@ -297,11 +297,9 @@ public class App {
         while (true) {
             System.out.print("Masukkan No KTP (16 digit): ");
             noKTP = scanner.nextLine();
-            if (noKTP.matches("\\d{16}")) {
-                break;
-            } else {
-                System.out.println("No KTP harus 16 digit angka. Silakan ulangi.");
-            }
+            if (isKembali(noKTP)) return null;
+            if (noKTP.matches("\\d{16}")) break;
+            else System.out.println("No KTP harus 16 digit angka. Silakan ulangi.");
         }
         return noKTP;
     }
@@ -311,15 +309,33 @@ public class App {
         while (true) {
             System.out.print("Masukkan No Telp: ");
             noTelp = scanner.nextLine();
-            if (noTelp.matches("\\d+")) {
-                break;
-            } else {
-                System.out.println("No Telp harus berupa angka. Silakan ulangi.");
-            }
+            if (isKembali(noTelp)) return null;
+            if (noTelp.matches("\\d+")) break;
+            else System.out.println("No Telp harus berupa angka. Silakan ulangi.");
         }
         return noTelp;
     }
+
+     private static String inputTanpaKoma(String label) {
+        String input;
+        while (true) {
+            System.out.print("Masukkan " + label + ": ");
+            input = scanner.nextLine();
+            if (isKembali(input)) return null;
+            if (input.trim().isEmpty()) {
+                System.out.println(label + " tidak boleh kosong atau spasi/tab. Silakan ulangi.");
+            } else if (input.matches(".*[\\p{Cntrl}\\p{So}\\p{Sc}#@!$%^&*()_+=\\[\\]{};:'\"<>?/\\\\|`~].*")) {
+                System.out.println(label + " tidak boleh mengandung karakter khusus atau emoji. Silakan ulangi.");
+            } else if (input.contains(",")) {
+                System.out.println(label + " tidak boleh mengandung koma (,). Silakan ulangi.");
+            } else {
+                return input;
+            }
+        }
+    }
+
+    private static boolean isKembali(String input) {
+        return input != null && input.equalsIgnoreCase("KEMBALI");
+    }
+    
 }
-
-
-
