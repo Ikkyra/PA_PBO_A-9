@@ -8,26 +8,29 @@ public class App {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        dataUser.loadFromCSV(); // Load data from CSV when starting
         adminMenu();
     }
 
     private static void adminMenu() {
         clearScreen();
-        System.out.println("+-----------------------------+");
-        System.out.println("|      MASUK SEBAGAI ADMIN   |");
-        System.out.println("+-----------------------------+");
+        System.out.println("+-----------------------------------+");
+        System.out.println("|     MASUK SEBAGAI ADMIN           |");
+        System.out.println("+-----------------------------------+");
         boolean running = true;
 
         while (running) {
-            System.out.println("\n=========== MENU ADMIN ===========");
-            System.out.println("1. Tambah Pelanggan");
-            System.out.println("2. Lihat List Pelanggan");
-            System.out.println("3. Update Pelanggan");
-            System.out.println("4. Hapus Pelanggan");
-            System.out.println("5. Cari Pelanggan");
-            System.out.println("6. Keluar");
-            System.out.println("==================================");
-            System.out.print("Pilih menu: ");
+            System.out.println("+-----------------------------------+");
+            System.out.println("|          MENU UTAMA               |");
+            System.out.println("+-----------------------------------+");
+            System.out.println("|   1. Tambah Pelanggan             |");
+            System.out.println("|   2. Lihat Pelanggan              |");
+            System.out.println("|   3. Update Pelanggan             |");
+            System.out.println("|   4. Hapus Pelanggan              |");
+            System.out.println("|   5. Cari Pelanggan               |");
+            System.out.println("|   0. Keluar                       |");
+            System.out.println("+-----------------------------------+");
+            System.out.print("Pilihan Anda [0-5]: ");
 
             try {
                 int menu = scanner.nextInt();
@@ -57,7 +60,7 @@ public class App {
                         clearScreen();
                         cariPelanggan();
                     }
-                    case 6 -> {
+                    case 0 -> {
                         System.out.println("Terima kasih! Keluar dari sistem...");
                         running = false;
                     }
@@ -76,11 +79,10 @@ public class App {
 
     while (!validInput) {
         try {
-            System.out.println("\n--- PILIH TIPE PELANGGAN ---");
-            System.out.println("1. Biasa");
-            System.out.println("2. Reguler");
-            System.out.println("3. Premium");
-            System.out.print("Pilihan: ");
+            System.out.println("\n==========[ TIPE MEMBERSHIPS ]==============");
+            System.out.println("     [1] Biasa  [2] Reguler  [3] Premium"    );
+            System.out.println("============================================");
+            System.out.print("Pilih Jenis Pelanggan: ");
             pilihan = scanner.nextInt();
             scanner.nextLine();
 
@@ -149,7 +151,7 @@ public class App {
             dataUser.tambahPelanggan(nama, alamat, noTelp, noKTP, diskon);
         }
     }
-    dataUser.saveToCSV("bUser.csv"); 
+    // dataUser.saveToCSV("dbUser.csv"); 
     System.out.println("Pelanggan berhasil ditambahkan.\n");
 }
 
@@ -197,10 +199,10 @@ public class App {
             }
         }
 
-        System.out.println("Pilih Jenis Pelanggan Baru:");
-        System.out.println("1. Biasa");
-        System.out.println("2. Reguler");
-        System.out.println("3. Premium");
+        System.out.println("Pilih Jenis Memberships Baru:");
+        System.out.println("\n==========[ TIPE MEMBERSHIPS ]==============");
+        System.out.println("     [1] Biasa  [2] Reguler  [3] Premium"    );
+        System.out.println("============================================");
         int pilihan;
         while (true) {
             try {
@@ -318,3 +320,6 @@ public class App {
         return noTelp;
     }
 }
+
+
+
