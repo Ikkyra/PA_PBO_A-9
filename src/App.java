@@ -8,7 +8,7 @@ public class App {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        dataUser.loadFromCSV(); // Load data from CSV when starting
+        dataUser.loadFromCSV(); 
         adminMenu();
     }
 
@@ -28,9 +28,9 @@ public class App {
             System.out.println("|   3. Update Pelanggan             |");
             System.out.println("|   4. Hapus Pelanggan              |");
             System.out.println("|   5. Cari Pelanggan               |");
-            System.out.println("|   6. Keluar                       |");
+            System.out.println("|   0. Keluar                       |");
             System.out.println("+-----------------------------------+");
-            System.out.print("Pilihan Anda [1-6]: ");
+            System.out.print("Pilihan Anda [0-5]: ");
 
             try {
                 int menu = scanner.nextInt();
@@ -48,11 +48,13 @@ public class App {
                     }
                     case 3 -> {
                         clearScreen();
+                        lihatPelanggan();
                         updatePelanggan();
                         delayClearScreen();
                     }
                     case 4 -> {
                         clearScreen();
+                        lihatPelanggan();
                         hapusPelanggan();
                         delayClearScreen();
                     }
@@ -60,7 +62,7 @@ public class App {
                         clearScreen();
                         cariPelanggan();
                     }
-                    case 6 -> {
+                    case 0 -> {
                         System.out.println("Terima kasih! Keluar dari sistem...");
                         running = false;
                     }
@@ -163,7 +165,9 @@ public class App {
     }
 
     private static void updatePelanggan() {
+        System.out.println("\n========= UPDATE DATA PELANGGAN =========");
         String noKTPUpdate = inputNoKTP();
+        isKembali(noKTPUpdate);
         if (noKTPUpdate == null) return;
 
         Pelanggan pelanggan = dataUser.cariPelanggan(noKTPUpdate);
@@ -173,24 +177,23 @@ public class App {
         }
 
         System.out.println("=== UPDATE DATA PELANGGAN ===");
-        System.out.println("Ketik KEMBALI untuk membatalkan.");
+        System.out.println("Biarkan kosong jika tidak ingin mengubah data tertentu.");
 
-        String nama = inputTanpaKoma("Nama Baru (Kosong jika tidak diubah)");
-        if (nama == null) return;
+        String nama = TanpaKoma("Masukkan Nama Baru ");
         if (nama.isEmpty()) nama = pelanggan.getNama();
 
-        String alamat = inputTanpaKoma("Alamat Baru (Kosong jika tidak diubah)");
-        if (alamat == null) return;
+        System.out.print("Masukkan Alamat Baru: ");
+        String alamat = scanner.nextLine();
         if (alamat.isEmpty()) alamat = pelanggan.getAlamat();
 
         System.out.print("Masukkan No Telp Baru: ");
         String noTelp = scanner.nextLine();
-        if (isKembali(noTelp)) return;
         if (noTelp.isEmpty()) noTelp = pelanggan.getNoTelp();
-        else while (!noTelp.matches("\\d+")) {
-            System.out.print("No Telp harus angka. Masukkan lagi: ");
-            noTelp = scanner.nextLine();
-            if (isKembali(noTelp)) return;
+        else {
+            while (!noTelp.matches("\\d+")) {
+                System.out.print("No Telp harus angka. Masukkan lagi: ");
+                noTelp = scanner.nextLine();
+            }
         }
 
         System.out.println("Pilih Jenis Memberships Baru:");
@@ -244,7 +247,9 @@ public class App {
     }
 
     private static void hapusPelanggan() {
+        System.out.println("\n========= HAPUS PELANGGAN =========");
         String noKTPHapus = inputNoKTP();
+        isKembali(noKTPHapus);
         if (noKTPHapus == null) return;
 
         if (!dataUser.cekKTP(noKTPHapus)) {
@@ -257,7 +262,9 @@ public class App {
     }
 
     private static void cariPelanggan() {
+        System.out.println("\n========= CARI PELANGGAN =========");
         String noKTP = inputNoKTP();
+        isKembali(noKTP);
         if (noKTP == null) return;
 
         Pelanggan pelanggan = dataUser.cariPelanggan(noKTP);
@@ -325,6 +332,22 @@ public class App {
             if (input.trim().isEmpty()) {
                 System.out.println(label + " tidak boleh kosong atau spasi/tab. Silakan ulangi.");
             } else if (input.matches(".*[\\p{Cntrl}\\p{So}\\p{Sc}#@!$%^&*()_+=\\[\\]{};:'\"<>?/\\\\|`~].*")) {
+                System.out.println(label + " tidak boleh mengandung karakter khusus atau emoji. Silakan ulangi.");
+            } else if (input.contains(",")) {
+                System.out.println(label + " tidak boleh mengandung koma (,). Silakan ulangi.");
+            } else {
+                return input;
+            }
+        }
+    }
+
+     private static String TanpaKoma(String label) {
+        String input;
+        while (true) {
+            System.out.print("Masukkan " + label + ": ");
+            input = scanner.nextLine();
+            if (isKembali(input)) return null;
+            if (input.matches(".*[\\p{Cntrl}\\p{So}\\p{Sc}#@!$%^&*()_+=\\[\\]{};:'\"<>?/\\\\|`~].*")) {
                 System.out.println(label + " tidak boleh mengandung karakter khusus atau emoji. Silakan ulangi.");
             } else if (input.contains(",")) {
                 System.out.println(label + " tidak boleh mengandung koma (,). Silakan ulangi.");
